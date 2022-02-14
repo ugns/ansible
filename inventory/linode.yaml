@@ -1,0 +1,13 @@
+plugin: linode
+ip_style: api
+
+groups:
+  linode: true
+keyed_groups:
+  - key: region
+    prefix: region
+  - key: tags | lower
+    prefix: tag
+
+compose:
+  ansible_ssh_host: "ipv4 | json_query('[?public==`true`].address') | first"
