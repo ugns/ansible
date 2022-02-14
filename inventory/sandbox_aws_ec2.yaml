@@ -1,0 +1,30 @@
+plugin: aws_ec2
+iam_role_arn: arn:aws:iam::804433379618:role/GitHubActionsExecution
+
+regions:
+  - us-east-1
+  - us-east-2
+  - us-west-2
+
+keyed_groups:
+  - key: placement.region
+    prefix: region
+  - key: tags | lower
+    prefix: tag
+
+filters:
+  instance-state-name: running
+
+exclude_filters:
+  - tag:alpha.eksctl.io/nodegroup-type:
+      - managed
+
+hostnames:
+  - tag:Name
+  - instance-id
+  - dns-name
+  - ip-address
+  - private-ip-address
+
+compose:
+  ansible_ssh_host: public_ip_address
