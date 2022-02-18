@@ -8,6 +8,8 @@ attributes:
   - tags
   - region
 
+api_token: "{{ lookup('hashi_vault', 'secret=actions/digitalocean:token')}}"
+
 groups:
   digitalocean: true
 keyed_groups:
