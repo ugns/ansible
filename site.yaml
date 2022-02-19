@@ -1,6 +1,9 @@
 ---
 - hosts: all
 
+  roles:
+    - os-update
+    
   tasks:
     - name: All good
       debug: msg="Everything good here."

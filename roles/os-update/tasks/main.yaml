@@ -1,0 +1,68 @@
+---
+- name: Install pre-requisite packages
+  block:
+  
+    - name: Check pre-requisite packages for YUM based host
+      yum:
+        name: yum-utils
+        state: present
+      when: ansible_os_family == "RedHat"
+
+- name: Update all installed packages
+  block:
+
+    - name: Update repository cache for APT based host
+      apt:
+        update_cache: yes
+        force_apt_get: yes
+        cache_valid_time: 3600
+      when: ansible_os_family == "Debian"
+
+    - name: Upgrade packages on APT based host
+      apt:
+        upgrade: dist
+        force_apt_get: yes
+      when: ansible_os_family == "Debian"
+
+
+    - name: Upgrade packages on YUM based host
+      yum:
+        name: '*'
+        state: latest
+      when: ansible_os_family == "RedHat"
+
+- name: Check if reboot is needed
+  block:
+
+    - name: Check if Debian/Ubuntu host needs rebooting
+      stat:
+        path: /var/run/reboot-required
+        get_md5: no
+      register: reboot_required_file
+      when: ansible_os_family == "Debian"
+
+
+    - name: Check if RHEL host needs rebooting
+      command: needs-restarting -r || touch /tmp/reboot-required
+      ignore_errors: true
+      when: ansible_os_family == "RedHat"
+
+    - name: Check needs-restarting on RHEL host
+      stat:
+        path: /tmp/reboot-required
+        get_md5: no
+      register: reboot_required_file
+      when: ansible_os_family == "RedHat"
+
+- name: Reboot server if needed
+  block:
+
+    - name: Initiate reboot of host
+      reboot:
+        msg: "Reboot initiated by Ansible after patching"
+        connect_timeout: "{{ reboot_connect_timeout }}"
+        reboot_timeout: "{{ reboot_timeout }}"
+        pre_reboot_delay: "{{ reboot_pre_reboot_delay }}"
+        post_reboot_delay: "{{ reboot_post_reboot_delay }}"
+        test_command: uptime
+      when: reboot_required_file is defined and reboot_required_file.stat.exists
