@@ -1,10 +1,6 @@
 plugin: linode
 ip_style: api
 
-access_token: "{{ lookup('hashi_vault', 'secret=secret/data/actions/linode:token')}}"
-
-groups:
-  linode: true
 keyed_groups:
   - key: region
     prefix: region

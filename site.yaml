@@ -1,0 +1,6 @@
+---
+- hosts: all
+
+  tasks:
+    - name: All good
+      debug: msg="Everything good here."
