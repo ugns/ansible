@@ -37,7 +37,6 @@
     - name: Check if Debian/Ubuntu host needs rebooting
       stat:
         path: /var/run/reboot-required
-        get_md5: no
       register: reboot_required_file
       when: ansible_os_family == "Debian"
 
@@ -50,7 +49,6 @@
     - name: Check needs-restarting on RHEL host
       stat:
         path: /tmp/reboot-required
-        get_md5: no
       register: reboot_required_file
       when: ansible_os_family == "RedHat"
 
@@ -65,4 +63,4 @@
         pre_reboot_delay: "{{ reboot_pre_reboot_delay }}"
         post_reboot_delay: "{{ reboot_post_reboot_delay }}"
         test_command: uptime
-      when: reboot_required_file is defined and reboot_required_file.stat.exists
+      when: reboot_required_file.stat.exists
