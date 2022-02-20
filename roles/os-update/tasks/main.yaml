@@ -64,3 +64,5 @@
         post_reboot_delay: "{{ reboot_post_reboot_delay }}"
         test_command: uptime
       when: reboot_required_file.stat.exists or rh_reboot_required_file.stat.exists
+      tags:
+        - unattended_reboot
